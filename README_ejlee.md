@@ -103,4 +103,39 @@ ImportError: cannot import name 'Graph' from 'keras.models'
 ```
 Delete `Graph` because the latest version of keras has removed Graph module from models.
 
- 
+* TypeError
+```
+TypeError: ('Keyword argument not understood:', 'init')
+```
+`GMF.py`
+
+Before
+```
+prediction = Dense(1, activation='sigmoid', init='lecun_uniform', name='prediction')(predict_vector)
+```
+After
+```
+prediction = Dense(1, activation='sigmoid', name='prediction')(predict_vector)
+```
+
+`MLP.py`
+
+Before 
+```
+prediction = Dense(1, activation='sigmoid',init='lecun_uniform',name='prediction')(vector)
+``
+After
+```
+prediction = Dense(1,activation='sigmoid',name='prediction')(vector)
+```
+
+`NeuMF.py`
+
+Before
+```
+prediction = Dense(1,activaiton='sigmoid',init='lecun_uniform',name="prediction")(predict_vector)
+```
+After
+```
+prediction = Dense(1,activation='sigmoid',name="prediction")(predict_vector)
+``` 
