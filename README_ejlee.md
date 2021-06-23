@@ -123,7 +123,7 @@ prediction = Dense(1, activation='sigmoid', name='prediction')(predict_vector)
 Before 
 ```
 prediction = Dense(1, activation='sigmoid',init='lecun_uniform',name='prediction')(vector)
-``
+```
 After
 ```
 prediction = Dense(1,activation='sigmoid',name='prediction')(vector)
@@ -144,6 +144,7 @@ prediction = Dense(1,activation='sigmoid',name="prediction")(predict_vector)
     MF_Embedding_User = Embedding(input_dim = num_users, output_dim = mf_dim, name = 'mf_embedding_user',
                                   init = init_normal, W_regularizer = l2(reg_mf), input_length=1)
 ```
+
 ```
 2021-06-23 14:00:35.220002: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Successfully opened dynamic library libcudart.so.11.0
 NeuMF arguments: Namespace(batch_size=256, dataset='ml-1m', epochs=100, layers='[64,32,16,8]', learner='adam', lr=0.001, mf_pretrain='', mlp_pretrain='', num_factors=8, num_neg=4, out=1, path='Data/', reg_layers='[0,0,0,0]', reg_mf=0, verbose=1) 
@@ -175,7 +176,7 @@ BEFORE
 ```
 prediction = Dense(1, activation='sigmoid', init='lecun_uniform', name='prediction')(predict_vector)
 ```
-`tf.keras.layers.Dense`
+`tf.keras.layers.Dense` - Parameters
 ```python3
 tf.keras.layers.Dense(
     units, activation=None, use_bias=True,
@@ -185,8 +186,9 @@ tf.keras.layers.Dense(
     bias_constraint=None, **kwargs
 )
 ```
-* init to kernel_initializer
-* 
+* 'init' to 'kernel_initializer'
+
+RESULT : `TypeError: init_normal() got an unexpected keyword argument 'dtype'`
 
 ```
 Traceback (most recent call last):
@@ -231,8 +233,60 @@ Traceback (most recent call last):
 TypeError: init_normal() got an unexpected keyword argument 'dtype'
 
 ```
+
 `GMF.py`
+ - Before
 ```python3
 62	MF_Embedding_User = Embedding(input_dim = num_users, output_dim = latent_dim, name = 'user_embedding', init = init_normal, W_regularizer = l2(regs[0]), input_length=1)
 ```
+`GMF.py` - After ('init' to 'embeddings_initializer' | 'W_regularizer' to 'embeddings_regularizer')
 
+```python3
+ 62     MF_Embedding_User = Embedding(input_dim = num_users, output_dim = latent_dim, name = 'user_embedding', embeddings_initializer = init_normal, embeddings_regularizer = l2(regs[0]), input_length=1)
+ 63     MF_Embedding_Item = Embedding(input_dim = num_items, output_dim = latent_dim, name = 'item_embedding', embeddings_initializer = init_normal, embeddings_regularizer = l2(regs[1]), input_length=1)
+ ```
+ 
+`NeuMF.py` - After ('init' to 'embeddings_initializer' | 'W_regularizer' to 'embeddings_regularizer')
+```python3
+ 75     # Embedding layer
+ 76     MF_Embedding_User = Embedding(input_dim = num_users, output_dim = mf_dim, name = 'mf_embedding_user', embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_mf), input_length=1)
+ 77     MF_Embedding_Item = Embedding(input_dim = num_items, output_dim = mf_dim, name = 'mf_embedding_item', embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_mf), input_length=1)
+ 78 
+ 79     MLP_Embedding_User = Embedding(input_dim = num_users, output_dim = layers[0]/2, name = "mlp_embedding_user", embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_layers[0]), input_length=1)
+ 80     MLP_Embedding_Item = Embedding(input_dim = num_items, output_dim = layers[0]/2, name = 'mlp_embedding_item', embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_layers[0]), input_length=1)
+```
+
+`MLP.py` - After ('init' to 'embeddings_initializer' | 'W_regularizer' to 'embeddings_regularizer')
+```
+ 66     MLP_Embedding_User = Embedding(input_dim = num_users, output_dim = layers[0]/2, name = 'user_embedding',embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_layers[0]), input_length=1)
+ 67     MLP_Embedding_Item = Embedding(input_dim = num_items, output_dim = layers[0]/2, name = 'item_embedding', embeddings_initializer = init_normal, embeddings_regularizer = l2(reg_layers[0]), input_length=1)
+```
+
+
+SAME ERROR
+
+`MLP.py`
+ - Before
+ ```python3
+ 56 def init_normal(shape, name=None):
+ 57     return initializations.normal(shape, scale=0.01, name=name)
+ ```
+ - After
+  ```python3
+ 56 def init_normal(shape, name=None):
+ 57     return initializers.normal(shape, scale=0.01, name=name)
+ ```
+ 
+ `GMF.py` - Before 
+ ```python3
+ 54 def init_normal(shape, name=None):
+ 55     return initializations.normal(shape, scale=0.01, name=name)
+ ```
+ - After
+ ```python3
+  54 def init_normal(shape, name=None):
+  55     return initializers.normal(shape, scale=0.01, name=name)
+ ```
+ 
+ NOT RESOLVED.. OTL
+ 
