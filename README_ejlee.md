@@ -290,3 +290,26 @@ SAME ERROR
  
  NOT RESOLVED.. OTL
  
+ERROE MESSAGE
+```
+TypeError: init_normal() got an unexpected keyword argument 'dtype'
+```
+`NeuMF.py` - init_normal(shape, name)
+```python3
+ 65 def init_normal(shape, name=None):
+ 66     return initializers.normal(shape, scale=0.01, name=name)
+```
+`NeuMF.py` - dtype
+
+Before
+```python3
+ 71     # Input variables
+ 72     user_input = Input(shape=(1,), dtype='int32', name = 'user_input')
+ 73     item_input = Input(shape=(1,), dtype='int32', name = 'item_input')
+ ```
+After
+```python3
+ 71     # Input variables
+ 72     user_input = Input(shape=(1,), name = 'user_input')
+ 73     item_input = Input(shape=(1,), name = 'item_input')
+```
