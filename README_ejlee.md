@@ -28,6 +28,7 @@ Successfully built theano
 Installing collected packages: scipy, theano
 Successfully installed scipy-1.7.0 theano-1.0.5
 ```
+### `NeuMF.py`
 * keras: `initializations` to `initializer`
 ```
 2021-06-23 11:26:26.535104: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Successfully opened dynamic library libcudart.so.11.0
@@ -40,3 +41,42 @@ Replacing 'initializations' to 'initializer' in 'NeuMF.py' file.
 
 Done.
 
+* keras: 'l1l2' to 'l1_l2'
+```
+2021-06-23 11:31:20.855886: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Successfully opened dynamic library libcudart.so.11.0
+Traceback (most recent call last):
+  File "NeuMF.py", line 15, in <module>
+    from keras.regularizers import l1, l2, l1l2
+ImportError: cannot import name 'l1l2' from 'keras.regularizers'
+```
+Replacing 'l1l2' to 'l1_l2'
+
+* keras: 'Merge' to 'merge'
+```
+2021-06-23 11:33:59.369824: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Successfully opened dynamic library libcudart.so.11.0
+Traceback (most recent call last):
+  File "NeuMF.py", line 18, in <module>
+    from keras.layers import Embedding, Input, Dense, merge, Reshape, Merge, Flatten, Dropout
+ImportError: cannot import name 'Merge' from 'keras.layers'
+```
+There is 'merge' already, so just delete 'Merge'.
+
+* keras: 'keras.optimizers; to 'tensorflow.keras.optimizers'
+```
+2021-06-23 12:28:25.533745: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Successfully opened dynamic library libcudart.so.11.0
+Traceback (most recent call last):
+  File "NeuMF.py", line 19, in <module>
+    from keras.optimizers import Adagrad, Adam, SGD, RMSprop
+ImportError: cannot import name 'Adagrad' from 'keras.optimizers' 
+```
+This error message is also for Adam, SGD, RMSprop
+
+To fix this, replace 'keras.optimizers' to 'tensorflow.keras.optimizers' like below.
+```python3
+from tensorflow.keras.optimizers import Adagrad
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.optimizers import SGD
+from tensorflow.keras.optimizers import RMSprop
+```
+
+### 
