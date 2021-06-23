@@ -63,10 +63,8 @@ def get_model(num_users, num_items, layers = [20,10], reg_layers=[0,0]):
     user_input = Input(shape=(1,), dtype='int32', name = 'user_input')
     item_input = Input(shape=(1,), dtype='int32', name = 'item_input')
 
-    MLP_Embedding_User = Embedding(input_dim = num_users, output_dim = layers[0]/2, name = 'user_embedding',
-                                  init = init_normal, W_regularizer = l2(reg_layers[0]), input_length=1)
-    MLP_Embedding_Item = Embedding(input_dim = num_items, output_dim = layers[0]/2, name = 'item_embedding',
-                                  init = init_normal, W_regularizer = l2(reg_layers[0]), input_length=1)   
+    MLP_Embedding_User = Embedding(input_dim = num_users, output_dim = layers[0]/2, name = 'user_embedding',embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_layers[0]), input_length=1)
+    MLP_Embedding_Item = Embedding(input_dim = num_items, output_dim = layers[0]/2, name = 'item_embedding', embeddings_initializer = init_normal, embeddings_regularizer = l2(reg_layers[0]), input_length=1)   
     
     # Crucial to flatten an embedding vector!
     user_latent = Flatten()(MLP_Embedding_User(user_input))
@@ -81,7 +79,7 @@ def get_model(num_users, num_items, layers = [20,10], reg_layers=[0,0]):
         vector = layer(vector)
         
     # Final prediction layer
-    prediction = Dense(1, activation='sigmoid', init='lecun_uniform', name = 'prediction')(vector)
+    prediction = Dense(1, activation='sigmoid', kernel_initializer='lecun_uniform', name = 'prediction')(vector)
     
     model = Model(input=[user_input, item_input], 
                   output=prediction)

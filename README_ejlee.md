@@ -138,4 +138,101 @@ prediction = Dense(1,activaiton='sigmoid',init='lecun_uniform',name="prediction"
 After
 ```
 prediction = Dense(1,activation='sigmoid',name="prediction")(predict_vector)
-``` 
+```
+
+```
+    MF_Embedding_User = Embedding(input_dim = num_users, output_dim = mf_dim, name = 'mf_embedding_user',
+                                  init = init_normal, W_regularizer = l2(reg_mf), input_length=1)
+```
+```
+2021-06-23 14:00:35.220002: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Successfully opened dynamic library libcudart.so.11.0
+NeuMF arguments: Namespace(batch_size=256, dataset='ml-1m', epochs=100, layers='[64,32,16,8]', learner='adam', lr=0.001, mf_pretrain='', mlp_pretrain='', num_factors=8, num_neg=4, out=1, path='Data/', reg_layers='[0,0,0,0]', reg_mf=0, verbose=1) 
+Load data done [11.1 s]. #user=6040, #item=3706, #train=994169, #test=6040
+Traceback (most recent call last):
+  File "NeuMF.py", line 181, in <module>
+    model = get_model(num_users, num_items, mf_dim, layers, reg_layers, reg_mf)
+  File "NeuMF.py", line 76, in get_model
+    MF_Embedding_User = Embedding(input_dim = num_users, output_dim = mf_dim, name = 'mf_embedding_user', init=init_normal, W_regularizer = l2(reg_mf), input_length=1)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/layers/embeddings.py", line 111, in __init__
+    super(Embedding, self).__init__(**kwargs)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/training/tracking/base.py", line 522, in _method_wrapper
+    result = method(self, *args, **kwargs)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 323, in __init__
+    generic_utils.validate_kwargs(kwargs, allowed_kwargs)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/utils/generic_utils.py", line 1134, in validate_kwargs
+    raise TypeError(error_message, kwarg)
+TypeError: ('Keyword argument not understood:', 'init')
+```
+SOLUTION: init to embeddings_initializer | W_regularizer to embeddings_regularizer
+```
+tf.keras.layers.Embedding(
+    input_dim, output_dim, embeddings_initializer='uniform',
+    embeddings_regularizer=None, activity_regularizer=None,
+    embeddings_constraint=None, mask_zero=False, input_length=None, **kwargs
+)
+```
+BEFORE
+```
+prediction = Dense(1, activation='sigmoid', init='lecun_uniform', name='prediction')(predict_vector)
+```
+`tf.keras.layers.Dense`
+```python3
+tf.keras.layers.Dense(
+    units, activation=None, use_bias=True,
+    kernel_initializer='glorot_uniform',
+    bias_initializer='zeros', kernel_regularizer=None,
+    bias_regularizer=None, activity_regularizer=None, kernel_constraint=None,
+    bias_constraint=None, **kwargs
+)
+```
+* init to kernel_initializer
+* 
+
+```
+Traceback (most recent call last):
+  File "NeuMF.py", line 181, in <module>
+    model = get_model(num_users, num_items, mf_dim, layers, reg_layers, reg_mf)
+  File "NeuMF.py", line 83, in get_model
+    mf_user_latent = Flatten()(MF_Embedding_User(user_input))
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 945, in __call__
+    return self._functional_construction_call(inputs, args, kwargs,
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 1083, in _functional_construction_call
+    outputs = self._keras_tensor_symbolic_call(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 816, in _keras_tensor_symbolic_call
+    return self._infer_output_signature(inputs, args, kwargs, input_masks)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 854, in _infer_output_signature
+    self._maybe_build(inputs)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 2601, in _maybe_build
+    self.build(input_shapes)  # pylint:disable=not-callable
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/utils/tf_utils.py", line 258, in wrapper
+    output_shape = fn(instance, input_shape)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/layers/embeddings.py", line 141, in build
+    self.embeddings = self.add_weight(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 615, in add_weight
+    variable = self._add_variable_with_custom_getter(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/training/tracking/base.py", line 810, in _add_variable_with_custom_getter
+    new_variable = getter(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer_utils.py", line 115, in make_variable
+    return tf.compat.v1.Variable(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/ops/variables.py", line 260, in __call__
+    return cls._variable_v1_call(*args, **kwargs)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/ops/variables.py", line 206, in _variable_v1_call
+    return previous_getter(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/ops/variables.py", line 199, in <lambda>
+    previous_getter = lambda **kwargs: default_variable_creator(None, **kwargs)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/ops/variable_scope.py", line 2612, in default_variable_creator
+    return resource_variable_ops.ResourceVariable(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/ops/variables.py", line 264, in __call__
+    return super(VariableMetaclass, cls).__call__(*args, **kwargs)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/ops/resource_variable_ops.py", line 1584, in __init__
+    self._init_from_args(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/ops/resource_variable_ops.py", line 1722, in _init_from_args
+    initial_value = initial_value()
+TypeError: init_normal() got an unexpected keyword argument 'dtype'
+
+```
+`GMF.py`
+```python3
+62	MF_Embedding_User = Embedding(input_dim = num_users, output_dim = latent_dim, name = 'user_embedding', init = init_normal, W_regularizer = l2(regs[0]), input_length=1)
+```
+
