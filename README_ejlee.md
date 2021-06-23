@@ -79,4 +79,28 @@ from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.optimizers import RMSprop
 ```
 
-### 
+### `MLP.py`
+* keras: 'activity_l2' to 'l2'
+```
+2021-06-23 13:29:29.738927: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Successfully opened dynamic library libcudart.so.11.0
+Traceback (most recent call last):
+  File "NeuMF.py", line 27, in <module>
+    import GMF, MLP
+  File "/home/ygkim/NCF_official_ejlee/MLP.py", line 16, in <module>
+    from keras.regularizers import l2, activity_l2
+ImportError: cannot import name 'activity_l2' from 'keras.regularizers'
+```
+
+* keras: Delete Graph from `keras.models`
+```
+2021-06-23 13:31:33.508606: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Successfully opened dynamic library libcudart.so.11.0
+Traceback (most recent call last):
+  File "NeuMF.py", line 27, in <module>
+    import GMF, MLP
+  File "/home/ygkim/NCF_official_ejlee/MLP.py", line 17, in <module>
+    from keras.models import Sequential, Graph, Model
+ImportError: cannot import name 'Graph' from 'keras.models'
+```
+Delete `Graph` because the latest version of keras has removed Graph module from models.
+
+ 
