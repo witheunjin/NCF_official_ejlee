@@ -28,4 +28,15 @@ Successfully built theano
 Installing collected packages: scipy, theano
 Successfully installed scipy-1.7.0 theano-1.0.5
 ```
+* keras: `initializations` to `initializer`
+```
+2021-06-23 11:26:26.535104: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Successfully opened dynamic library libcudart.so.11.0
+Traceback (most recent call last):
+  File "NeuMF.py", line 14, in <module>
+    from keras import initializations
+ImportError: cannot import name 'initializations' from 'keras' 
+```
+Replacing 'initializations' to 'initializer' in 'NeuMF.py' file.
+
+Done.
 
