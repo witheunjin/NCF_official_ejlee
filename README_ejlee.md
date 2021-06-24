@@ -426,4 +426,26 @@ After : Change `'int32'` to `tf.int32`
 ```
 
 RESULT
+```
+2021-06-24 12:13:54.520460: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Successfully opened dynamic library libcudart.so.11.0
+NeuMF arguments: Namespace(batch_size=256, dataset='ml-1m', epochs=100, layers='[64,32,16,8]', learner='adam', lr=0.001, mf_pretrain='', mlp_pretrain='', num_factors=8, num_neg=4, out=1, path='Data/', reg_layers='[0,0,0,0]', reg_mf=0, verbose=1) 
+Load data done [11.4 s]. #user=6040, #item=3706, #train=994169, #test=6040
+Traceback (most recent call last):
+  File "NeuMF.py", line 181, in <module>
+    model = get_model(num_users, num_items, mf_dim, layers, reg_layers, reg_mf)
+  File "NeuMF.py", line 72, in get_model
+    user_input = Input(shape=(1,), dtype=tf.int32, name='user_input')
+NameError: name 'tf' is not defined
+
+```
+AFTER - Import tensorflow
+```python3 
+ 9 import tensorflow as tf
+```  
+
+REAL PROBLEM ZONE
+
+Someone made it!
+https://github.com/hexiangnan/neural_collaborative_filtering/pull/11/files
+
 
