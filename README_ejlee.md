@@ -401,3 +401,29 @@ Traceback (most recent call last):
 TypeError: init_normal() got an unexpected keyword argument 'dtype'
 ```
 NOT RESOLVED...
+
+After : Change `'int32'` to `tf.int32`
+```python3
+ 71     # Input variables
+ 72     user_input = Input(shape=(1,), dtype = tf.int32, name = 'user_input')
+ 73     item_input = Input(shape=(1,), dtype = tf.int32, name = 'item_input')
+ 74
+ 75     # Embedding layer
+ 76     MF_Embedding_User = Embedding(input_dim = num_users, output_dim = mf_dim, name = 'mf_embedding_user', embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_mf), input_length=1)
+ 77     MF_Embedding_Item = Embedding(input_dim = num_items, output_dim = mf_dim, name = 'mf_embedding_item', embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_mf), input_length=1)
+ 78 
+ 79     MLP_Embedding_User = Embedding(input_dim = num_users, output_dim = layers[0]/2, name = "mlp_embedding_user", embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_layers[0]), input_length=1)
+ 80     MLP_Embedding_Item = Embedding(input_dim = num_items, output_dim = layers[0]/2, name = 'mlp_embedding_item', embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_layers[0]), input_length=1)
+ 81 
+ 82     # MF part
+ 83     mf_user_latent = Flatten()(MF_Embedding_User(user_input))
+ 84     mf_item_latent = Flatten()(MF_Embedding_Item(item_input))
+ 85     mf_vector = merge([mf_user_latent, mf_item_latent], mode = 'mul') # element-wise multiply
+ 86 
+ 87     # MLP part 
+ 88     mlp_user_latent = Flatten()(MLP_Embedding_User(user_input))
+ 89     mlp_item_latent = Flatten()(MLP_Embedding_Item(item_input))
+```
+
+RESULT
+
