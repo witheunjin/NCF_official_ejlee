@@ -313,3 +313,91 @@ After
  72     user_input = Input(shape=(1,), name = 'user_input')
  73     item_input = Input(shape=(1,), name = 'item_input')
 ```
+After2
+```python3
+ 71     # Input variables
+ 72     user_input = Input(shape=(1,), dtype='int32')
+ 73     item_input = Input(shape=(1,), dtype='int32')
+```
+
+Before
+```python3
+ 75     # Embedding layer
+ 76     MF_Embedding_User = Embedding(input_dim = num_users, output_dim = mf_dim, name = 'mf_embedding_user', embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_mf), input_length=1)
+ 77     MF_Embedding_Item = Embedding(input_dim = num_items, output_dim = mf_dim, name = 'mf_embedding_item', embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_mf), input_length=1)
+ 78 
+ 79     MLP_Embedding_User = Embedding(input_dim = num_users, output_dim = layers[0]/2, name = "mlp_embedding_user", embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_layers[0]), input_length=1)
+ 80     MLP_Embedding_Item = Embedding(input_dim = num_items, output_dim = layers[0]/2, name = 'mlp_embedding_item', embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_layers[0]), input_length=1)
+ 81 
+ 82     # MF part
+ 83     mf_user_latent = Flatten()(MF_Embedding_User(user_input))
+ 84     mf_item_latent = Flatten()(MF_Embedding_Item(item_input))
+ 85     mf_vector = merge([mf_user_latent, mf_item_latent], mode = 'mul') # element-wise multiply
+ 86 
+ 87     # MLP part 
+ 88     mlp_user_latent = Flatten()(MLP_Embedding_User(user_input))
+ 89     mlp_item_latent = Flatten()(MLP_Embedding_Item(item_input))
+```
+After
+```python3
+ 75     # Embedding layer
+ 76     MF_Embedding_User = Embedding(input_dim = num_users, output_dim = mf_dim, embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_mf), input_length=1)(user_input)
+ 77     MF_Embedding_Item = Embedding(input_dim = num_items, output_dim = mf_dim, embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_mf), input_length=1)(item_input)
+ 78 
+ 79     MLP_Embedding_User = Embedding(input_dim = num_users, output_dim = layers[0]/2, embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_layers[0]), input_length=1)(user_input)
+ 80     MLP_Embedding_Item = Embedding(input_dim = num_items, output_dim = layers[0]/2, embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_layers[0]), input_length=1)(item_input)
+ 81 
+ 82     # MF part
+ 83     mf_user_latent = Flatten()(MF_Embedding_User)
+ 84     mf_item_latent = Flatten()(MF_Embedding_Item)
+ 85     mf_vector = merge([mf_user_latent, mf_item_latent], mode = 'mul') # element-wise multiply
+ 86 
+ 87     # MLP part 
+ 88     mlp_user_latent = Flatten()(MLP_Embedding_User)
+ 89     mlp_item_latent = Flatten()(MLP_Embedding_Item)
+```
+
+RESULT
+```
+Traceback (most recent call last):
+  File "NeuMF.py", line 181, in <module>
+    model = get_model(num_users, num_items, mf_dim, layers, reg_layers, reg_mf)
+  File "NeuMF.py", line 76, in get_model
+    MF_Embedding_User = Embedding(input_dim = num_users, output_dim = mf_dim, embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_mf), input_length=1)(user_input)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 945, in __call__
+    return self._functional_construction_call(inputs, args, kwargs,
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 1083, in _functional_construction_call
+    outputs = self._keras_tensor_symbolic_call(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 816, in _keras_tensor_symbolic_call
+    return self._infer_output_signature(inputs, args, kwargs, input_masks)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 854, in _infer_output_signature
+    self._maybe_build(inputs)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 2601, in _maybe_build
+    self.build(input_shapes)  # pylint:disable=not-callable
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/utils/tf_utils.py", line 258, in wrapper
+    output_shape = fn(instance, input_shape)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/layers/embeddings.py", line 141, in build
+    self.embeddings = self.add_weight(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 615, in add_weight
+    variable = self._add_variable_with_custom_getter(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/training/tracking/base.py", line 810, in _add_variable_with_custom_getter
+    new_variable = getter(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer_utils.py", line 115, in make_variable
+    return tf.compat.v1.Variable(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/ops/variables.py", line 260, in __call__
+    return cls._variable_v1_call(*args, **kwargs)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/ops/variables.py", line 206, in _variable_v1_call
+    return previous_getter(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/ops/variables.py", line 199, in <lambda>
+    previous_getter = lambda **kwargs: default_variable_creator(None, **kwargs)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/ops/variable_scope.py", line 2612, in default_variable_creator
+    return resource_variable_ops.ResourceVariable(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/ops/variables.py", line 264, in __call__
+    return super(VariableMetaclass, cls).__call__(*args, **kwargs)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/ops/resource_variable_ops.py", line 1584, in __init__
+    self._init_from_args(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/ops/resource_variable_ops.py", line 1722, in _init_from_args
+    initial_value = initial_value()
+TypeError: init_normal() got an unexpected keyword argument 'dtype'
+```
+NOT RESOLVED...
