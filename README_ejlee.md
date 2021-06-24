@@ -448,4 +448,76 @@ REAL PROBLEM ZONE
 Someone made it!
 https://github.com/hexiangnan/neural_collaborative_filtering/pull/11/files
 
+RESOLVED!!!
+
+**SOLUTION**
+
+Delete `init_normal` and Change `init_normal` to `"random_normal" 
+```python3
+ 75     # Embedding layer
+ 76     MF_Embedding_User = Embedding(input_dim = num_users, output_dim = mf_dim, name = 'mf_embedding_user', embeddings_initializer="random_normal", embeddings_regularizer = l2(reg_mf), input_length=1)
+ 77     MF_Embedding_Item = Embedding(input_dim = num_items, output_dim = mf_dim, name = 'mf_embedding_item', embeddings_initializer="random_normal", embeddings_regularizer = l2(reg_mf), input_length=1)
+ 78 
+ 79     MLP_Embedding_User = Embedding(input_dim = num_users, output_dim = layers[0]/2, name = 'mlp_embedding_user', embeddings_initializer="random_normal", embeddings_regularizer = l2(reg_layers[0]), input_length=1)
+ 80     MLP_Embedding_Item = Embedding(input_dim = num_items, output_dim = layers[0]/2, name = 'mlp_embedding_item', embeddings_initializer="random_normal", embeddings_regularizer = l2(reg_layers[0]), input_length=1)
+```
+
+ERROR
+```
+Traceback (most recent call last):
+  File "NeuMF.py", line 181, in <module>
+    model = get_model(num_users, num_items, mf_dim, layers, reg_layers, reg_mf)
+  File "NeuMF.py", line 85, in get_model
+    mf_vector = merge([mf_user_latent, mf_item_latent], mode = 'mul') # element-wise multiply
+TypeError: 'module' object is not callable
+```
+
+Reference : [StackOverFlow-TypeError: 'module' object is not callable](https://stackoverflow.com/questions/4534438/typeerror-module-object-is-not-callable)
+
+PROBLEM
+```python3
+ 86     mf_vector = merge([mf_user_latent, mf_item_latent], mode = 'mul') # element-wise multiply
+```
+SOLVED!
+AFTER - keras.layers.Multiply
+```python3
+ 85     mf_vector = keras.layers.Multiply()([mf_user_latent, mf_item_latent]) # element-wise multiply
+```
+
+ERROR
+```python3
+Traceback (most recent call last):
+  File "NeuMF.py", line 181, in <module>
+    model = get_model(num_users, num_items, mf_dim, layers, reg_layers, reg_mf)
+  File "NeuMF.py", line 88, in get_model
+    mlp_user_latent = Flatten()(MLP_Embedding_User(user_input))
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 945, in __call__
+    return self._functional_construction_call(inputs, args, kwargs,
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 1083, in _functional_construction_call
+    outputs = self._keras_tensor_symbolic_call(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 816, in _keras_tensor_symbolic_call
+    return self._infer_output_signature(inputs, args, kwargs, input_masks)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 854, in _infer_output_signature
+    self._maybe_build(inputs)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 2601, in _maybe_build
+    self.build(input_shapes)  # pylint:disable=not-callable
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/utils/tf_utils.py", line 258, in wrapper
+    output_shape = fn(instance, input_shape)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/layers/embeddings.py", line 141, in build
+    self.embeddings = self.add_weight(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer.py", line 615, in add_weight
+    variable = self._add_variable_with_custom_getter(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/training/tracking/base.py", line 810, in _add_variable_with_custom_getter
+    new_variable = getter(
+  File "/home/ygkim/.local/lib/python3.8/site-packages/keras/engine/base_layer_utils.py", line 114, in make_variable
+    variable_shape = tf.TensorShape(shape)
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/framework/tensor_shape.py", line 765, in __init__
+    self._dims = [Dimension(d) for d in dims]
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/framework/tensor_shape.py", line 765, in <listcomp>
+    self._dims = [Dimension(d) for d in dims]
+  File "/home/ygkim/.local/lib/python3.8/site-packages/tensorflow/python/framework/tensor_shape.py", line 206, in __init__
+    six.raise_from(
+  File "<string>", line 3, in raise_from
+TypeError: Dimension value must be integer or None or have an __index__ method, got value '32.0' with type '<class 'float'>'
+```
 
