@@ -6,7 +6,7 @@ He Xiangnan et al. Neural Collaborative Filtering. In WWW 2017.
 @author: Xiangnan He (xiangnanhe@gmail.com)
 '''
 import numpy as np
-
+import tensorflow as tf
 import theano
 import theano.tensor as T
 import keras
@@ -62,22 +62,22 @@ def parse_args():
                         help='Specify the pretrain model file for MLP part. If empty, no pretrain will be used')
     return parser.parse_args()
 
-def init_normal(shape, name=None):
-    return initializers.normal(shape, scale=0.01, name=name)
+#def init_normal(shape, name=None):
+#    return initializers.normal(shape, scale=0.01, name=name)
 
 def get_model(num_users, num_items, mf_dim=10, layers=[10], reg_layers=[0], reg_mf=0):
     assert len(layers) == len(reg_layers)
     num_layer = len(layers) #Number of layers in the MLP
     # Input variables
-    user_input = Input(shape=(1,), dtype='int32', name = 'user_input')
-    item_input = Input(shape=(1,), dtype='int32', name = 'item_input')
-    
+    user_input = Input(shape=(1,), dtype=tf.int32, name='user_input')
+    item_input = Input(shape=(1,), dtype=tf.int32, name='item_input')
+    print('DONE') 
     # Embedding layer
-    MF_Embedding_User = Embedding(input_dim = num_users, output_dim = mf_dim, name = 'mf_embedding_user', embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_mf), input_length=1)
-    MF_Embedding_Item = Embedding(input_dim = num_items, output_dim = mf_dim, name = 'mf_embedding_item', embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_mf), input_length=1)   
+    MF_Embedding_User = Embedding(input_dim = num_users, output_dim = mf_dim, name = 'mf_embedding_user', embeddings_initializer="random_normal", embeddings_regularizer = l2(reg_mf), input_length=1)
+    MF_Embedding_Item = Embedding(input_dim = num_items, output_dim = mf_dim, name = 'mf_embedding_item', embeddings_initializer="random_normal", embeddings_regularizer = l2(reg_mf), input_length=1)
 
-    MLP_Embedding_User = Embedding(input_dim = num_users, output_dim = layers[0]/2, name = "mlp_embedding_user", embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_layers[0]), input_length=1)
-    MLP_Embedding_Item = Embedding(input_dim = num_items, output_dim = layers[0]/2, name = 'mlp_embedding_item', embeddings_initializer=init_normal, embeddings_regularizer = l2(reg_layers[0]), input_length=1)   
+    MLP_Embedding_User = Embedding(input_dim = num_users, output_dim = layers[0]/2, name = 'mlp_embedding_user', embeddings_initializer="random_normal", embeddings_regularizer = l2(reg_layers[0]), input_length=1)
+    MLP_Embedding_Item = Embedding(input_dim = num_items, output_dim = layers[0]/2, name = 'mlp_embedding_item', embeddings_initializer="random_normal", embeddings_regularizer = l2(reg_layers[0]), input_length=1)
     
     # MF part
     mf_user_latent = Flatten()(MF_Embedding_User(user_input))
